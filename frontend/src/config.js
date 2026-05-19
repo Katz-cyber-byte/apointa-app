@@ -1,17 +1,17 @@
 export const BUSINESS_CONFIG = {
-    name: "The Modern Barber", // Change this for your client
-    slug: "modern-barber",
-    currency: "R", // South African Rand
-    primaryColor: "indigo-600", // Tailwind color class
-    email: "owner@example.com"
+    name: "Ai Salon", 
+    slug: "ai-salon",
+    currency: "R",
+    primaryColor: "indigo-600",
+    email: "katlehomotseki37@gmail.com"
 };
 
 export const CONFIG = {
-    API_BASE_URL: "http://localhost:5001/api",
+    // FIXED: Use the clean Render URL without :10000 and without /health
+    API_BASE_URL: "https://apointa-app.onrender.com/api",
     APP_NAME: "Apointa",
     CURRENCY: "R",
     ADMIN_TOKEN_KEY: "apointa_token_final",
-    // Unified Professional Palette
     COLORS: {
         PRIMARY: "#0A2540",   // Deep Navy
         ACCENT: "#2F80FF",    // Electric Blue
@@ -19,4 +19,5 @@ export const CONFIG = {
     }
 };
 
-export const API_URL = "http://localhost:5001/api";
+// FIXED: This should match the CONFIG above
+export const API_URL = "https://apointa-app.onrender.com/api";
