@@ -115,16 +115,29 @@ app.post('/api/bookings/public', async (req, res) => {
 });
 
 app.get('/api/public/business-info/:slug', async (req, res) => {
-    const userRes = await pool.query("SELECT id, business_name, availability FROM users WHERE slug = $1", [req.params.slug.toLowerCase()]);
-    const user = userRes.rows[0];
-    if (!user) return res.status(404).send();
-    const services = await pool.query("SELECT * FROM services WHERE user_id = $1", [user.id]);
-    const bookings = await pool.query("SELECT date, time FROM bookings WHERE user_id = $1", [user.id]);
-    res.json({ 
-        user: { ...user, availability: JSON.parse(user.availability || '{}') }, 
-        services: services.rows, 
-        bookedSlots: bookings.rows 
-    });
+    try {
+        const slug = req.params.slug.toLowerCase().trim();
+        console.log("Customer looking for:", slug);
+
+        const user = await db.get("SELECT id, business_name, availability FROM users WHERE slug = $1", [slug]);
+        
+        if (!user) {
+            return res.status(404).json({ error: "Store not found" });
+        }
+
+        const services = await db.all("SELECT * FROM services WHERE user_id = $1", [user.id]);
+        const bookings = await db.all("SELECT date, time FROM bookings WHERE user_id = $1", [user.id]);
+
+        // Explicitly send an object with services inside it
+        res.json({ 
+            user: { ...user, availability: JSON.parse(user.availability || '{}') }, 
+            services: services || [], 
+            bookedSlots: bookings || [] 
+        });
+    } catch (e) {
+        console.error("Public Route Error:", e.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 // --- 8. START ENGINE ---
