@@ -48,13 +48,16 @@ app.post('/api/signup', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const slug = business_name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        
         await pool.query(
             "INSERT INTO users (email, password, business_name, slug, availability) VALUES ($1, $2, $3, $4, $5)",
             [email, hashedPassword, business_name, slug, '{}']
         );
         res.json({ success: true });
     } catch (e) {
-        res.status(400).json({ error: "Email or Business name already taken." });
+        // THIS IS THE FIX: Send the REAL error back to the phone
+        console.error("Signup Error:", e.message);
+        res.status(400).json({ error: e.message }); 
     }
 });
 
