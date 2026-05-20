@@ -12,7 +12,7 @@ const AdminDashboard = () => {
     const [newService, setNewService] = useState({ name: '', price: '', duration: '' });
     const [availability, setAvailability] = useState({});
 
-    const businessSlug = localStorage.getItem('slug') || 'merchant'; 
+    const businessSlug = localStorage.getItem('slug') || 'default'; 
     const businessName = localStorage.getItem('business_name') || 'Merchant';
     const bookingLink = `${window.location.origin}/book/${businessSlug}`;
 
