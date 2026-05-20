@@ -43,19 +43,32 @@ const CustomerBooking = () => {
     };
 
     const getAvailableSlots = () => {
-        if (!bizInfo?.user || !formData.date) return [];
-        const dayOfWeek = new Date(formData.date).getDay();
-        const settings = bizInfo.user.availability[dayOfWeek];
-        if (!settings?.open) return [];
-        const start = parseInt(settings.start.split(':')[0]);
-        const end = parseInt(settings.end.split(':')[0]);
-        let slots = [];
-        for (let i = start; i < end; i++) {
-            const t = `${String(i).padStart(2, '0')}:00`;
-            if (!bizInfo.bookedSlots.some(b => b.date === formData.date && b.time === t)) slots.push(t);
-        }
-        return slots;
-    };
+        // 1. Safety Check: If no business info or no date selected
+        if (!bizInfo?.user?.availability || !formData.date) return [];
+    
+        const [y, m, d] = formData.date.split('-').map(Number);
+        const dateObj = new Date(y, m - 1, d);
+        const dayOfWeek = dateObj.getDay();
+    
+        // 2. Safety Check: Get settings for this specific day
+        const daySettings = bizInfo.user.availability[dayOfWeek];
+
+        // 3. THE FIX: If the shop hasn't set hours for this day yet, don't crash!
+        if (!daySettings || !daySettings.open || !daySettings.start || !daySettings.end) {
+        return []; 
+    }
+
+    const startH = parseInt(daySettings.start.split(':')[0]);
+    const endH = parseInt(daySettings.end.split(':')[0]);
+    
+    let slots = [];
+    for (let i = startH; i < endH; i++) {
+        const timeStr = `${String(i).padStart(2, '0')}:00`;
+        const isBooked = bizInfo.bookedSlots?.some(b => b.date === formData.date && b.time === timeStr);
+        if (!isBooked) slots.push(timeStr);
+    }
+    return slots;
+};
 
     const handleBooking = async (e) => {
         e.preventDefault();
