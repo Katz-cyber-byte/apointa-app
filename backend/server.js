@@ -5,11 +5,17 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const app = express();
 
+// Render sets the PORT automatically. We use 5001 only for your laptop.
 const PORT = process.env.PORT || 5001;
 const JWT_SECRET = process.env.JWT_SECRET || "apointa_secret_2025";
 
 app.use(cors());
 app.use(express.json());
+
+// --- 1. THE CRITICAL HEALTH CHECK (Fixes the Render Timeout) ---
+app.get('/api/health', (req, res) => {
+    res.status(200).send('OK');
+});
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -28,6 +34,7 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+// --- AUTH ROUTES ---
 app.post('/api/signup', async (req, res) => {
     const { email, password, business_name } = req.body;
     try {
@@ -58,6 +65,7 @@ app.post('/api/login', async (req, res) => {
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
 
+// --- DATA ROUTES ---
 app.get('/api/profile', authenticateToken, async (req, res) => {
     const result = await pool.query("SELECT business_name, slug, availability FROM users WHERE id = $1", [req.userId]);
     const user = result.rows[0];
@@ -66,27 +74,6 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 
 app.patch('/api/settings', authenticateToken, async (req, res) => {
     await pool.query("UPDATE users SET availability = $1 WHERE id = $2", [JSON.stringify(req.body.availability), req.userId]);
-    res.json({ success: true });
-});
-
-app.get('/api/bookings', authenticateToken, async (req, res) => {
-    const result = await pool.query("SELECT bookings.*, services.name as service_name FROM bookings LEFT JOIN services ON bookings.service_id = services.id WHERE bookings.user_id = $1 ORDER BY date ASC, time ASC", [req.userId]);
-    res.json(result.rows);
-});
-
-// --- THE MISSING RESCHEDULE ROUTE ---
-app.patch('/api/bookings/:id/reschedule', authenticateToken, async (req, res) => {
-    try {
-        await pool.query("UPDATE bookings SET time = $1 WHERE id = $2 AND user_id = $3", [req.body.time, req.params.id, req.userId]);
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-app.post('/api/bookings/public', async (req, res) => {
-    const { slug, customer_name, customer_email, customer_phone, notes, service_id, date, time } = req.body;
-    const userRes = await pool.query("SELECT id FROM users WHERE slug = $1", [slug.toLowerCase()]);
-    const user = userRes.rows[0];
-    await pool.query("INSERT INTO bookings (user_id, customer_name, customer_email, customer_phone, notes, service_id, date, time) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [user.id, customer_name, customer_email, customer_phone, notes, service_id, date, time]);
     res.json({ success: true });
 });
 
@@ -102,6 +89,16 @@ app.post('/api/services', authenticateToken, async (req, res) => {
 
 app.delete('/api/services/:id', authenticateToken, async (req, res) => {
     await pool.query("DELETE FROM services WHERE id = $1 AND user_id = $2", [req.params.id, req.userId]);
+    res.json({ success: true });
+});
+
+app.get('/api/bookings', authenticateToken, async (req, res) => {
+    const result = await pool.query("SELECT bookings.*, services.name as service_name FROM bookings LEFT JOIN services ON bookings.service_id = services.id WHERE bookings.user_id = $1 ORDER BY date ASC, time ASC", [req.userId]);
+    res.json(result.rows);
+});
+
+app.patch('/api/bookings/:id/reschedule', authenticateToken, async (req, res) => {
+    await pool.query("UPDATE bookings SET time = $1 WHERE id = $2 AND user_id = $3", [req.body.time, req.params.id, req.userId]);
     res.json({ success: true });
 });
 
@@ -126,4 +123,13 @@ app.get('/api/public/business-info/:slug', async (req, res) => {
     } catch (e) { res.status(500).send(); }
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Apointa Engine Live on ${PORT}`));
+app.post('/api/bookings/public', async (req, res) => {
+    const { slug, customer_name, customer_email, customer_phone, notes, service_id, date, time } = req.body;
+    const userRes = await pool.query("SELECT id FROM users WHERE slug = $1", [slug.toLowerCase()]);
+    const user = userRes.rows[0];
+    await pool.query("INSERT INTO bookings (user_id, customer_name, customer_email, customer_phone, notes, service_id, date, time) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [user.id, customer_name, customer_email, customer_phone, notes, service_id, date, time]);
+    res.json({ success: true });
+});
+
+// CRITICAL: Listening on 0.0.0.0 is mandatory for cloud deploy
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Engine Live`));
