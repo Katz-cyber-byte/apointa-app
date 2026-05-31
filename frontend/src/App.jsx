@@ -4,12 +4,13 @@ import SignUp from './pages/SignUp';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import CustomerBooking from './pages/CustomerBooking';
-import { CONFIG } from './config'; // Import the config
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import { CONFIG } from './config';
 
+// Security check component
 const ProtectedRoute = ({ children }) => {
-    // We check for the SPECIFIC key defined in config.js
     const token = localStorage.getItem(CONFIG.ADMIN_TOKEN_KEY);
-    
     if (!token) {
         return <Navigate to="/login" replace />;
     }
@@ -20,9 +21,15 @@ function App() {
     return (
         <Router>
             <Routes>
+                {/* Public Auth Routes */}
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/login" element={<Login />} />
                 
+                {/* Legal Pages */}
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+
+                {/* Protected Admin Route */}
                 <Route 
                     path="/admin" 
                     element={
@@ -32,8 +39,11 @@ function App() {
                     } 
                 />
 
+                {/* Public Booking Link */}
                 <Route path="/book/:businessSlug" element={<CustomerBooking />} />
-                <Route path="/" element={<Navigate to="/signup" />} />
+
+                {/* Default Redirect to Signup */}
+                <Route path="/" element={<Navigate to="/signup" replace />} />
             </Routes>
         </Router>
     );
