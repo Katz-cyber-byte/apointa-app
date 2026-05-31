@@ -6,11 +6,15 @@ import { CONFIG } from '../config';
 const SignUp = () => {
     const [form, setForm] = useState({ email: '', password: '', business_name: '' });
     const [isLoading, setIsLoading] = useState(false);
+    const [agreed, setAgreed] = useState(false); // 1. State goes at the TOP
     const navigate = useNavigate();
 
-    // FIXED: Wrapped the logic in a proper async function
     const handleSignUp = async (e) => {
         e.preventDefault();
+        
+        // extra safety check
+        if(!agreed) return alert("Please agree to the terms.");
+
         setIsLoading(true);
 
         try {
@@ -39,7 +43,7 @@ const SignUp = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] p-4 font-sans">
+        <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] p-4 font-sans text-[#0A2540]">
             <div className="max-w-md w-full">
                 {/* Logo Area */}
                 <div className="flex flex-col items-center mb-8">
@@ -91,9 +95,28 @@ const SignUp = () => {
                             />
                         </div>
 
+                        {/* 2. CONSENT CHECKBOX (Correctly placed inside the form) */}
+                        <div className="flex items-start gap-3 mt-2">
+                            <input 
+                                required 
+                                type="checkbox" 
+                                id="agree"
+                                className="mt-1 w-4 h-4 rounded border-slate-300 text-[#2F80FF] focus:ring-[#2F80FF]" 
+                                checked={agreed}
+                                onChange={(e) => setAgreed(e.target.checked)}
+                            />
+                            <label htmlFor="agree" className="text-[11px] text-slate-500 leading-tight">
+                                I agree to the <Link to="/terms" target="_blank" className="text-[#2F80FF] font-bold">Terms</Link> and acknowledge the <Link to="/privacy" target="_blank" className="text-[#2F80FF] font-bold">Privacy Policy</Link> (POPIA compliant).
+                            </label>
+                        </div>
+
+                        {/* 3. SUBMIT BUTTON (Disabled logic included) */}
                         <button 
-                            disabled={isLoading}
-                            className={`w-full bg-[#0A2540] text-white py-3.5 rounded-lg font-bold shadow-md hover:bg-[#1a365d] transition-all flex items-center justify-center gap-2 mt-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            disabled={isLoading || !agreed}
+                            className={`w-full py-3.5 rounded-lg font-bold shadow-md transition-all flex items-center justify-center gap-2 mt-4 
+                                ${(!agreed || isLoading) 
+                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
+                                    : 'bg-[#0A2540] text-white hover:bg-[#1a365d]'}`}
                         >
                             <ShieldCheck size={18} />
                             {isLoading ? 'Creating Account...' : 'Create Merchant Account'}
