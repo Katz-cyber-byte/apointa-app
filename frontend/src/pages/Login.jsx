@@ -47,7 +47,7 @@ const Login = () => {
                     <div className="w-10 h-10 bg-[#2F80FF] rounded-lg mb-3 flex items-center justify-center font-bold text-white italic shadow-sm">
                         A
                     </div>
-                    <h1 className="text-2xl font-bold text-[#0A2540]">Sign in to Apointa</h1>
+                    <h1 className="text-2xl font-bold text-[#0A2540]">Sign in to Schedinary</h1>
                     <p className="text-slate-500 text-sm mt-1">Manage your business appointments</p>
                 </div>
 

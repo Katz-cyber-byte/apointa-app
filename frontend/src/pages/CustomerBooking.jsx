@@ -98,7 +98,7 @@ const CustomerBooking = () => {
         if (res.ok) setIsConfirmed(true);
     };
 
-    if (loading) return <div className="h-screen flex items-center justify-center font-black text-[#0A2540] animate-pulse">APOINTA LOADING...</div>;
+    if (loading) return <div className="h-screen flex items-center justify-center font-black text-[#0A2540] animate-pulse">Schedinary LOADING...</div>;
 
     if (isConfirmed) return (
         <div className="max-w-md mx-auto mt-20 text-center p-12 bg-white rounded-3xl shadow-2xl border-t-8 border-[#00E5FF]">
@@ -120,7 +120,7 @@ const CustomerBooking = () => {
         <div className="min-h-screen bg-[#F7F9FC] pb-20 font-sans">
             <header className="bg-[#0A2540] text-white py-14 px-6 text-center relative">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#2F80FF] rounded-full text-[10px] font-black uppercase mb-4 tracking-widest shadow-lg shadow-[#2F80FF]/20">
-                    <ShieldCheck size={12}/> Apointa Verified
+                    <ShieldCheck size={12}/> Schedinary Verified
                 </div>
                 <h1 className="text-4xl font-black tracking-tight capitalize leading-tight">{bizInfo.user.business_name}</h1>
             </header>

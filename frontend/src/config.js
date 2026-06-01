@@ -7,15 +7,14 @@ export const BUSINESS_CONFIG = {
 };
 
 export const CONFIG = {
-    // FIXED: Use the clean Render URL without :10000 and without /health
     API_BASE_URL: "https://apointa-app.onrender.com/api",
-    APP_NAME: "Apointa",
+    APP_NAME: "Schedinary",
     CURRENCY: "R",
-    ADMIN_TOKEN_KEY: "apointa_token_final",
+    ADMIN_TOKEN_KEY: "schedinary_auth_token", // Updated key
     COLORS: {
-        PRIMARY: "#0A2540",   // Deep Navy
-        ACCENT: "#2F80FF",    // Electric Blue
-        BG: "#F7F9FC",        // Soft Grey-White
+        PRIMARY: "#0A2540",
+        ACCENT: "#2F80FF",
+        BG: "#F7F9FC",
     }
 };
 

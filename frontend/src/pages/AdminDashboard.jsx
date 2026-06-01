@@ -89,15 +89,15 @@ const AdminDashboard = () => {
         return acc;
     }, {});
 
-    if (loading) return <div className="h-screen flex items-center justify-center font-bold text-slate-400 animate-pulse">Syncing Apointa...</div>;
+    if (loading) return <div className="h-screen flex items-center justify-center font-bold text-slate-400 animate-pulse">Syncing Schedinary...</div>;
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen bg-[#F7F9FC] text-[#0A2540] font-sans">
             {/* Sidebar */}
             <aside className={`fixed inset-y-0 left-0 z-[60] w-64 bg-[#0A2540] text-white p-6 transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:flex md:flex-col shadow-2xl`}>
                 <div className="flex items-center gap-2 mb-10">
-                    <div className="w-8 h-8 bg-[#2F80FF] rounded flex items-center justify-center font-bold text-white italic shadow-lg">A</div>
-                    <h1 className="text-xl font-bold tracking-tight uppercase">Apointa</h1>
+                    <div className="w-8 h-8 bg-[#2F80FF] rounded flex items-center justify-center font-bold text-white italic shadow-lg">S</div>
+                    <h1 className="text-xl font-bold tracking-tight uppercase">Schedinary</h1>
                 </div>
                 <nav className="flex-1 space-y-1">
                     <button onClick={() => {setActiveTab('agenda'); setIsSidebarOpen(false);}} className={`w-full flex items-center space-x-3 p-3 rounded-xl text-sm font-bold transition ${activeTab === 'agenda' ? 'bg-[#2F80FF] text-white shadow-lg' : 'text-slate-400 hover:bg-white/5'}`}>
